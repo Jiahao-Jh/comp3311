@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+# COMP3311 20T3 Ass3 ... print name, year, ratings of top N movies
+
+import sys
+import psycopg2
+#from helpers import whatever, functions, you, need
+from helpers import print_massage_and_exit
+
+# define any local helper functions here
+
+# set up some globals
+
+usage = "Usage: best [N]"
+db=None
+dbname = "imdb"
+
+# process command-line args
+
+argc = len(sys.argv)
+if argc > 2:
+  print_massage_and_exit(usage)
+
+if argc == 1:
+  num = 10
+else:
+  try:
+    num = int(sys.argv[1])
+  except:
+    print_massage_and_exit(usage)
+  if num <1:
+    print_massage_and_exit(usage)
+
+# manipulate database
+
+try:
+  db = psycopg2.connect("dbname=imdb")
+  cur = db.cursor()
+  cur.execute("select title, rating, start_year  from movies order by rating desc, title asc")
+  for tmp in cur.fetchmany(num):
+    print(tmp[1],tmp[0] + ' ('+str(tmp[2])+')')
+
+except psycopg2.Error as err:
+  print("DB error: ", err)
+finally:
+  if db:
+    db.close()
+

@@ -1,0 +1,392 @@
+check_ass1: INFO: trying to copy schema.sql to /srvr/cs3311/work/ass1/testing/z5266153/schema.sql
+check_ass1: INFO: successfully copied schema.sql to /srvr/cs3311/work/ass1/testing/z5266153/schema.sql
+Output:
+     1	Loaded your schema, with the following output:
+     2	CREATE TYPE
+     3	CREATE TYPE
+     4	CREATE TYPE
+     5	CREATE TYPE
+     6	CREATE TABLE
+     7	CREATE TABLE
+     8	CREATE TABLE
+     9	CREATE TABLE
+    10	CREATE TABLE
+    11	CREATE TABLE
+    12	CREATE TABLE
+    13	CREATE TABLE
+    14	CREATE TABLE
+    15	CREATE TABLE
+    16	CREATE TABLE
+    17	CREATE TABLE
+    18	CREATE TABLE
+    19	CREATE TABLE
+    20	CREATE TABLE
+    21	CREATE TABLE
+    22	
+    23	Listing your relations:
+    24	        Name         | Type  
+    25	---------------------+-------
+    26	 events              | table
+    27	 users               | table
+    28	 groups              | table
+    29	 member              | table
+    30	 calendars           | table
+    31	 accessibility       | table
+    32	 subscribed          | table
+    33	 one_day_events      | table
+    34	 invited             | table
+    35	 alarms              | table
+    36	 spanning_events     | table
+    37	 recurring_events    | table
+    38	 weekly_events       | table
+    39	 monthlybydayevents  | table
+    40	 monthlybydateevents | table
+    41	 annual_events       | table
+    42	(16 rows)
+    43	
+    44	
+    45	Summary of your relations:
+    46	16 / 16 expected tables found
+    47	
+    48	
+    49	Listing table "users":
+    50	                             Table "public.users"
+    51	  Column  |  Type   | Collation | Nullable |              Default              
+    52	----------+---------+-----------+----------+-----------------------------------
+    53	 id       | integer |           | not null | nextval('users_id_seq'::regclass)
+    54	 name     | text    |           | not null | 
+    55	 passwd   | text    |           | not null | 
+    56	 email    | text    |           | not null | 
+    57	 is_admin | boolean |           | not null | 
+    58	Indexes:
+    59	    "users_pkey" PRIMARY KEY, btree (id)
+    60	    "users_email_key" UNIQUE CONSTRAINT, btree (email)
+    61	Referenced by:
+    62	    TABLE "accessibility" CONSTRAINT "accessibility_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+    63	    TABLE "calendars" CONSTRAINT "calendars_owner_fkey" FOREIGN KEY (owner) REFERENCES users(id)
+    64	    TABLE "events" CONSTRAINT "events_createdby_fkey" FOREIGN KEY (createdby) REFERENCES users(id)
+    65	    TABLE "groups" CONSTRAINT "groups_owner_fkey" FOREIGN KEY (owner) REFERENCES users(id)
+    66	    TABLE "invited" CONSTRAINT "invited_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+    67	    TABLE "member" CONSTRAINT "member_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+    68	    TABLE "subscribed" CONSTRAINT "subscribed_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+    69	
+    70	
+    71	
+    72	Summary of table "users":
+    73	5 / 5 expected attributes found in "users"
+    74	5 / 5 attributes have the correct type
+    75	5 / 5 attributes have the correct nullability
+    76	
+    77	Listing table "groups":
+    78	                            Table "public.groups"
+    79	 Column |  Type   | Collation | Nullable |              Default               
+    80	--------+---------+-----------+----------+------------------------------------
+    81	 id     | integer |           | not null | nextval('groups_id_seq'::regclass)
+    82	 name   | text    |           | not null | 
+    83	 owner  | integer |           | not null | 
+    84	Indexes:
+    85	    "groups_pkey" PRIMARY KEY, btree (id)
+    86	Foreign-key constraints:
+    87	    "groups_owner_fkey" FOREIGN KEY (owner) REFERENCES users(id)
+    88	Referenced by:
+    89	    TABLE "member" CONSTRAINT "member_group_id_fkey" FOREIGN KEY (group_id) REFERENCES groups(id)
+    90	
+    91	
+    92	
+    93	Summary of table "groups":
+    94	3 / 3 expected attributes found in "groups"
+    95	3 / 3 attributes have the correct type
+    96	3 / 3 attributes have the correct nullability
+    97	
+    98	Listing table "calendars":
+    99	                                     Table "public.calendars"
+   100	     Column     |       Type        | Collation | Nullable |                Default                
+   101	----------------+-------------------+-----------+----------+---------------------------------------
+   102	 id             | integer           |           | not null | nextval('calendars_id_seq'::regclass)
+   103	 name           | text              |           | not null | 
+   104	 colour         | text              |           | not null | 
+   105	 default_access | accessibilitytype |           | not null | 
+   106	 owner          | integer           |           | not null | 
+   107	Indexes:
+   108	    "calendars_pkey" PRIMARY KEY, btree (id)
+   109	Foreign-key constraints:
+   110	    "calendars_owner_fkey" FOREIGN KEY (owner) REFERENCES users(id)
+   111	Referenced by:
+   112	    TABLE "accessibility" CONSTRAINT "accessibility_calendar_id_fkey" FOREIGN KEY (calendar_id) REFERENCES calendars(id)
+   113	    TABLE "events" CONSTRAINT "events_part_of_fkey" FOREIGN KEY (part_of) REFERENCES calendars(id)
+   114	    TABLE "subscribed" CONSTRAINT "subscribed_calendar_id_fkey" FOREIGN KEY (calendar_id) REFERENCES calendars(id)
+   115	
+   116	
+   117	
+   118	Summary of table "calendars":
+   119	5 / 5 expected attributes found in "calendars"
+   120	5 / 5 attributes have the correct type
+   121	5 / 5 attributes have the correct nullability
+   122	
+   123	Listing table "events":
+   124	                                      Table "public.events"
+   125	   Column   |          Type          | Collation | Nullable |              Default               
+   126	------------+------------------------+-----------+----------+------------------------------------
+   127	 id         | integer                |           | not null | nextval('events_id_seq'::regclass)
+   128	 part_of    | integer                |           | not null | 
+   129	 createdby  | integer                |           | not null | 
+   130	 title      | text                   |           | not null | 
+   131	 visibility | visibilitytype         |           | not null | 
+   132	 location   | text                   |           |          | 
+   133	 start_time | time without time zone |           |          | 
+   134	 end_time   | time without time zone |           |          | 
+   135	Indexes:
+   136	    "events_pkey" PRIMARY KEY, btree (id)
+   137	Foreign-key constraints:
+   138	    "events_createdby_fkey" FOREIGN KEY (createdby) REFERENCES users(id)
+   139	    "events_part_of_fkey" FOREIGN KEY (part_of) REFERENCES calendars(id)
+   140	Referenced by:
+   141	    TABLE "alarms" CONSTRAINT "alarms_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   142	    TABLE "invited" CONSTRAINT "invited_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   143	    TABLE "one_day_events" CONSTRAINT "one_day_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   144	    TABLE "recurring_events" CONSTRAINT "recurring_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   145	    TABLE "spanning_events" CONSTRAINT "spanning_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   146	
+   147	
+   148	
+   149	Summary of table "events":
+   150	8 / 8 expected attributes found in "events"
+   151	8 / 8 attributes have the correct type
+   152	8 / 8 attributes have the correct nullability
+   153	
+   154	Listing table "one_day_events":
+   155	            Table "public.one_day_events"
+   156	  Column  |  Type   | Collation | Nullable | Default 
+   157	----------+---------+-----------+----------+---------
+   158	 event_id | integer |           | not null | 
+   159	 date     | date    |           | not null | 
+   160	Indexes:
+   161	    "one_day_events_pkey" PRIMARY KEY, btree (event_id)
+   162	Foreign-key constraints:
+   163	    "one_day_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   164	
+   165	
+   166	
+   167	Summary of table "one_day_events":
+   168	2 / 2 expected attributes found in "one_day_events"
+   169	2 / 2 attributes have the correct type
+   170	2 / 2 attributes have the correct nullability
+   171	
+   172	Listing table "spanning_events":
+   173	            Table "public.spanning_events"
+   174	   Column   |  Type   | Collation | Nullable | Default 
+   175	------------+---------+-----------+----------+---------
+   176	 event_id   | integer |           | not null | 
+   177	 start_date | date    |           | not null | 
+   178	 end_date   | date    |           | not null | 
+   179	Indexes:
+   180	    "spanning_events_pkey" PRIMARY KEY, btree (event_id)
+   181	Foreign-key constraints:
+   182	    "spanning_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   183	
+   184	
+   185	
+   186	Summary of table "spanning_events":
+   187	3 / 3 expected attributes found in "spanning_events"
+   188	3 / 3 attributes have the correct type
+   189	3 / 3 attributes have the correct nullability
+   190	
+   191	Listing table "recurring_events":
+   192	            Table "public.recurring_events"
+   193	   Column   |  Type   | Collation | Nullable | Default 
+   194	------------+---------+-----------+----------+---------
+   195	 event_id   | integer |           | not null | 
+   196	 start_date | date    |           | not null | 
+   197	 end_date   | date    |           |          | 
+   198	 ntimes     | integer |           |          | 
+   199	Indexes:
+   200	    "recurring_events_pkey" PRIMARY KEY, btree (event_id)
+   201	Foreign-key constraints:
+   202	    "recurring_events_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   203	Referenced by:
+   204	    TABLE "annual_events" CONSTRAINT "annual_events_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   205	    TABLE "monthlybydateevents" CONSTRAINT "monthlybydateevents_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   206	    TABLE "monthlybydayevents" CONSTRAINT "monthlybydayevents_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   207	    TABLE "weekly_events" CONSTRAINT "weekly_events_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   208	
+   209	
+   210	
+   211	Summary of table "recurring_events":
+   212	4 / 4 expected attributes found in "recurring_events"
+   213	4 / 4 attributes have the correct type
+   214	4 / 4 attributes have the correct nullability
+   215	
+   216	Listing table "weekly_events":
+   217	                  Table "public.weekly_events"
+   218	       Column       |   Type    | Collation | Nullable | Default 
+   219	--------------------+-----------+-----------+----------+---------
+   220	 recurring_event_id | integer   |           | not null | 
+   221	 dayofweek          | dayofweek |           | not null | 
+   222	 frequency          | integer   |           | not null | 
+   223	Indexes:
+   224	    "weekly_events_pkey" PRIMARY KEY, btree (recurring_event_id)
+   225	Foreign-key constraints:
+   226	    "weekly_events_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   227	
+   228	
+   229	
+   230	Summary of table "weekly_events":
+   231	3 / 3 expected attributes found in "weekly_events"
+   232	3 / 3 attributes have the correct type
+   233	3 / 3 attributes have the correct nullability
+   234	
+   235	Listing table "monthlybydayevents":
+   236	                Table "public.monthlybydayevents"
+   237	       Column       |   Type    | Collation | Nullable | Default 
+   238	--------------------+-----------+-----------+----------+---------
+   239	 recurring_event_id | integer   |           | not null | 
+   240	 dayofweek          | dayofweek |           | not null | 
+   241	 weekinmonth        | integer   |           | not null | 
+   242	Indexes:
+   243	    "monthlybydayevents_pkey" PRIMARY KEY, btree (recurring_event_id)
+   244	Check constraints:
+   245	    "monthlybydayevents_weekinmonth_check" CHECK (weekinmonth >= 1 AND weekinmonth <= 5)
+   246	Foreign-key constraints:
+   247	    "monthlybydayevents_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   248	
+   249	
+   250	
+   251	Summary of table "monthlybydayevents":
+   252	3 / 3 expected attributes found in "monthlybydayevents"
+   253	3 / 3 attributes have the correct type
+   254	3 / 3 attributes have the correct nullability
+   255	
+   256	Listing table "monthlybydateevents":
+   257	              Table "public.monthlybydateevents"
+   258	       Column       |  Type   | Collation | Nullable | Default 
+   259	--------------------+---------+-----------+----------+---------
+   260	 recurring_event_id | integer |           | not null | 
+   261	 dateinmonth        | integer |           | not null | 
+   262	Indexes:
+   263	    "monthlybydateevents_pkey" PRIMARY KEY, btree (recurring_event_id)
+   264	Check constraints:
+   265	    "monthlybydateevents_dateinmonth_check" CHECK (dateinmonth >= 1 AND dateinmonth <= 31)
+   266	Foreign-key constraints:
+   267	    "monthlybydateevents_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   268	
+   269	
+   270	
+   271	Summary of table "monthlybydateevents":
+   272	2 / 2 expected attributes found in "monthlybydateevents"
+   273	2 / 2 attributes have the correct type
+   274	2 / 2 attributes have the correct nullability
+   275	
+   276	Listing table "annual_events":
+   277	                 Table "public.annual_events"
+   278	       Column       |  Type   | Collation | Nullable | Default 
+   279	--------------------+---------+-----------+----------+---------
+   280	 recurring_event_id | integer |           | not null | 
+   281	 date               | date    |           | not null | 
+   282	Indexes:
+   283	    "annual_events_pkey" PRIMARY KEY, btree (recurring_event_id)
+   284	Foreign-key constraints:
+   285	    "annual_events_recurring_event_id_fkey" FOREIGN KEY (recurring_event_id) REFERENCES recurring_events(event_id)
+   286	
+   287	
+   288	
+   289	Summary of table "annual_events":
+   290	2 / 2 expected attributes found in "annual_events"
+   291	2 / 2 attributes have the correct type
+   292	2 / 2 attributes have the correct nullability
+   293	
+   294	Listing table "member":
+   295	                Table "public.member"
+   296	  Column  |  Type   | Collation | Nullable | Default 
+   297	----------+---------+-----------+----------+---------
+   298	 user_id  | integer |           | not null | 
+   299	 group_id | integer |           | not null | 
+   300	Indexes:
+   301	    "member_pkey" PRIMARY KEY, btree (user_id, group_id)
+   302	Foreign-key constraints:
+   303	    "member_group_id_fkey" FOREIGN KEY (group_id) REFERENCES groups(id)
+   304	    "member_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+   305	
+   306	
+   307	
+   308	Summary of table "member":
+   309	2 / 2 expected attributes found in "member"
+   310	2 / 2 attributes have the correct type
+   311	2 / 2 attributes have the correct nullability
+   312	
+   313	Listing table "subscribed":
+   314	               Table "public.subscribed"
+   315	   Column    |  Type   | Collation | Nullable | Default 
+   316	-------------+---------+-----------+----------+---------
+   317	 user_id     | integer |           | not null | 
+   318	 calendar_id | integer |           | not null | 
+   319	 colour      | text    |           |          | 
+   320	Indexes:
+   321	    "subscribed_pkey" PRIMARY KEY, btree (user_id, calendar_id)
+   322	Foreign-key constraints:
+   323	    "subscribed_calendar_id_fkey" FOREIGN KEY (calendar_id) REFERENCES calendars(id)
+   324	    "subscribed_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+   325	
+   326	
+   327	
+   328	Summary of table "subscribed":
+   329	3 / 3 expected attributes found in "subscribed"
+   330	3 / 3 attributes have the correct type
+   331	3 / 3 attributes have the correct nullability
+   332	
+   333	Listing table "accessibility":
+   334	                   Table "public.accessibility"
+   335	   Column    |       Type        | Collation | Nullable | Default 
+   336	-------------+-------------------+-----------+----------+---------
+   337	 user_id     | integer           |           | not null | 
+   338	 calendar_id | integer           |           | not null | 
+   339	 access      | accessibilitytype |           | not null | 
+   340	Indexes:
+   341	    "accessibility_pkey" PRIMARY KEY, btree (user_id, calendar_id)
+   342	Foreign-key constraints:
+   343	    "accessibility_calendar_id_fkey" FOREIGN KEY (calendar_id) REFERENCES calendars(id)
+   344	    "accessibility_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+   345	
+   346	
+   347	
+   348	Summary of table "accessibility":
+   349	3 / 3 expected attributes found in "accessibility"
+   350	3 / 3 attributes have the correct type
+   351	3 / 3 attributes have the correct nullability
+   352	
+   353	Listing table "invited":
+   354	                  Table "public.invited"
+   355	  Column  |     Type     | Collation | Nullable | Default 
+   356	----------+--------------+-----------+----------+---------
+   357	 user_id  | integer      |           | not null | 
+   358	 event_id | integer      |           | not null | 
+   359	 status   | invitestatus |           | not null | 
+   360	Indexes:
+   361	    "invited_pkey" PRIMARY KEY, btree (user_id, event_id)
+   362	Foreign-key constraints:
+   363	    "invited_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   364	    "invited_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+   365	
+   366	
+   367	
+   368	Summary of table "invited":
+   369	3 / 3 expected attributes found in "invited"
+   370	3 / 3 attributes have the correct type
+   371	3 / 3 attributes have the correct nullability
+   372	
+   373	Listing table "alarms":
+   374	                Table "public.alarms"
+   375	  Column  |   Type   | Collation | Nullable | Default 
+   376	----------+----------+-----------+----------+---------
+   377	 event_id | integer  |           | not null | 
+   378	 alarm    | interval |           | not null | 
+   379	Indexes:
+   380	    "alarms_pkey" PRIMARY KEY, btree (event_id, alarm)
+   381	Foreign-key constraints:
+   382	    "alarms_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id)
+   383	
+   384	
+   385	
+   386	Summary of table "alarms":
+   387	2 / 2 expected attributes found in "alarms"
+   388	2 / 2 attributes have the correct type
+   389	2 / 2 attributes have the correct nullability

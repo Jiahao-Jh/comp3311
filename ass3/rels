@@ -1,0 +1,88 @@
+#!/usr/bin/python3
+# COMP3311 20T3 Ass3 ... print info about different releases for Movie
+
+import sys
+import psycopg2
+#from helpers import whatever, functions, you, need
+from helpers import print_massage_and_exit
+
+# define any local helper functions here
+
+# set up some globals
+
+usage = "Usage: rels 'PartialMovieTitle'"
+db=None
+dbname = "imdb"
+
+# process command-line args
+
+argc = len(sys.argv)
+if argc != 2:
+  print_massage_and_exit(usage)
+
+input_string = sys.argv[1]
+
+# manipulate database
+
+try:
+  db = psycopg2.connect("dbname="+dbname)
+  cur = db.cursor()
+  cur.execute("select title, start_year,id from movies where title ~* %s order by start_year, title ",[input_string])
+  count = 0
+  result_str = ""
+  movie_id = 0
+  while(1):
+    tmp = cur.fetchone()
+    if tmp == None:
+      break
+    else:
+      result_str = result_str + tmp[0] + ' ('+ str(tmp[1]) + ')\n' 
+      movie_id = tmp[2]
+      count += 1
+
+  
+  aliases_result_str = ""
+  aliases_result_list = []
+  aliases_count = 0
+  if count == 0:
+    print_massage_and_exit("No movie matching '" + input_string + "'")
+  elif count == 1:
+    cur.execute("select local_title, region, language, extra_info from aliases where movie_id =%s order by ordering, local_title asc",[movie_id])
+    for tmp in cur.fetchall():
+      local_title = tmp[0]
+      region = tmp[1]
+      language = tmp[2]
+      aliases_result_list = []
+      if region == None and language == None and tmp[3] != None:
+        aliases_result_list.append(tmp[3])
+      if region != None:
+        aliases_result_list.append("region: " + region.rstrip())
+      if language != None:
+        aliases_result_list.append("language: " + language.rstrip())
+
+      if aliases_result_list.count == 0:
+        aliases_result_str = aliases_result_str + "'" + local_title + "'\n"
+      else:
+        aliases_result_str = aliases_result_str + "'" + local_title + "' " + "(" + ", ".join(aliases_result_list) + ")\n"
+
+      aliases_count += 1
+
+    if aliases_count == 0:
+      print(result_str.rstrip('\n') + " has no alternative releases")
+    else:
+      print(result_str.rstrip('\n') + " was also released as")
+      print(aliases_result_str.rstrip('\n'))
+
+
+
+  elif count > 1:
+    print("Movies matching '" + input_string + "'\n===============")
+    print(result_str.rstrip('\n'))
+
+
+except psycopg2.Error as err:
+  print("DB error: ", err)
+finally:
+  if db:
+    db.close()
+

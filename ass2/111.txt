@@ -1,0 +1,15 @@
+select id
+from subjects
+where code = 'MATH1131';
+
+select *
+from courses
+where subject = 3008 and term = 214;
+
+select *
+from course_enrolments
+where course = 84123 and mark = 56;
+
+select unswid
+from people
+where id = 1104514;
